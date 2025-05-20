@@ -1,8 +1,11 @@
 import numpy as np
 
 function_dict = {
-"1": "Safety Calculator",
-"2": "Use Until Miss"
+"1": "Use Until Miss",
+"2": "Use Until Hit",
+"3": "Average Hits",
+"4": "Average Misses",
+"5": "Safety Calculator"
 }
 move_dict = {
 "1": "Hydro Pump",
@@ -10,16 +13,21 @@ move_dict = {
 "3": "Fissure",
 "4": "Tackle",
 "5": "Air Slash",
-"6": "Dark Void"
+"6": "Dark Void",
+"7": "Blizzard"
 }
 acc_dict = {
-"Hydro Pump": 70,
+"Hydro Pump": 80,
 "Thunder Wave": 90,
 "Fissure": 30,
 "Tackle": 100,
 "Air Slash": 95,
-"Dark Void": 50
+"Dark Void": 50,
+"Blizzard": 70
 }
+
+#mode switcher for functions later
+data_only = False
 
 #simple dice roll | parameter is number of faces
 def roll(dice):
@@ -81,17 +89,54 @@ def first_miss(accuracy):
     if accuracy == 100:
         print("move will not miss")
         return
-    hits = 0
+    times_hit = 0
     miss = False
     while miss == False:
         roll_check = roll(100)
         if  roll_check > accuracy:
             miss = True
         else:
-            hits += 1
-    print(move + " successfully hit " + str(hits) + " times")
-
-move_list = {"hydro_pump", "tbolt", "fissure", "tackle"}
+            times_hit += 1
+    if data_only == False:
+        print(move + " successfully hit " + str(times_hit) + " times")
+    else:
+        return times_hit
+    
+#simulates how many tries until a hit | parameter is accuracy of move
+def first_hit(accuracy):
+    if accuracy == 0:
+        print("move will always miss")
+        return
+    times_missed = 0
+    miss = True
+    while miss == True:
+        roll_check = roll(100)
+        if  roll_check > accuracy:
+            times_missed += 1
+        else:
+            miss = False
+    if data_only == False:
+        print(move + " missed " + str(times_missed) + " times until successful hit")
+    else:
+        return times_missed
+    
+def avg_hit(accuracy, scrutiny):
+    print("working...")
+    misses = 0
+    trial = 0
+    while trial < scrutiny:
+        misses += first_miss(accuracy)
+        trial += 1
+    print(move + " hits successfully an average of " + str(round((misses / scrutiny),3)) + " times before missing")
+    
+def avg_miss(accuracy, scrutiny):
+    print("working...")
+    hits = 0
+    trial = 0
+    while trial < scrutiny:
+        hits += first_hit(accuracy)
+        trial += 1
+    print(move + " misses an average of " + str(round((hits / scrutiny),3)) + " times before hitting successfully")
 
 #loops for prompting and checking function and move input
 Selecting = 0
@@ -122,9 +167,19 @@ while Selecting < 2:
 move = move_dict[move]
 move_acc = acc_dict[move]
 if function == "1":
-    safe_calc(move_acc,10,100000)
-elif function == "2":
+    data_only = False
     first_miss(move_acc)
+elif function == "2":
+    data_only = False
+    first_hit(move_acc)
+elif function == "3":
+    data_only = True
+    avg_hit(move_acc, 100000)
+elif function == "4":
+    data_only = True
+    avg_miss(move_acc, 100000)
+elif function == "5":
+    safe_calc(move_acc, 10, 100000)
 else:
     print("function undefined")
     
