@@ -1,5 +1,6 @@
 import numpy as np
 
+#dictionaries for easily adding more function and move options
 function_dict = {
 "1": "Use Until Miss",
 "2": "Use Until Hit",
@@ -29,7 +30,7 @@ acc_dict = {
 #mode switcher for functions later
 data_only = False
 
-#simple dice roll | parameter is number of faces
+#simple dice roll | parameter is number of faces | used for every probability function
 def roll(dice):
     return np.random.randint(dice) + 1
 
@@ -47,6 +48,7 @@ def dict_check(item, dict):
     return any(x in item for x in dict)
 
 #averages hit rate of moves | 1st parameter is accuracy of move, 2nd is times executed
+#the value just approaches the move's accuracy as rolls reach infinity
 #not used
 def hit_test(accuracy, rolls):
     tries = 0
@@ -60,6 +62,7 @@ def hit_test(accuracy, rolls):
 
 #runs a "safety test of a move" | 1st parameter is accuracy of move, 2nd is times executed
 #returns True only if every instance of the move hits
+#building block for "Safety Calculator" function
 def safe_test(accuracy, rolls):
     miss = False
     tries = 0
@@ -85,6 +88,7 @@ def safe_calc(accuracy, rolls, scrutiny):
     print(move + " is 'safe' " + str(round((safeties / scrutiny * 100),3)) + "% of the time")
 
 #simulates how many tries until a miss | parameter is accuracy of move
+#this function is "Use Until Miss" and a building block for "Average Hits"
 def first_miss(accuracy):
     if accuracy == 100:
         print("move will not miss")
@@ -103,6 +107,7 @@ def first_miss(accuracy):
         return times_hit
     
 #simulates how many tries until a hit | parameter is accuracy of move
+#this function is "Use Until Hit" and a building block for "Average Misses"
 def first_hit(accuracy):
     if accuracy == 0:
         print("move will always miss")
@@ -119,7 +124,8 @@ def first_hit(accuracy):
         print(move + " missed " + str(times_missed) + " times until successful hit")
     else:
         return times_missed
-    
+
+#averages how many times a move hits before it misses
 def avg_hit(accuracy, scrutiny):
     print("working...")
     misses = 0
@@ -128,7 +134,8 @@ def avg_hit(accuracy, scrutiny):
         misses += first_miss(accuracy)
         trial += 1
     print(move + " hits successfully an average of " + str(round((misses / scrutiny),3)) + " times before missing")
-    
+
+#averages how many times a move misses before it hits
 def avg_miss(accuracy, scrutiny):
     print("working...")
     hits = 0
